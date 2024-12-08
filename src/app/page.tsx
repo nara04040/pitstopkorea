@@ -2,6 +2,9 @@ import { Card } from '@/components/common/Card/Card';
 import { Timer } from '@/components/common/Timer/Timer';
 import { LiveTiming } from '@/components/race/LiveTiming';
 import { dummyNextRace } from '@/lib/data/dummyRaceData';
+import { NewsCard } from '@/components/news/NewsCard';
+import { dummyNews } from '@/lib/data/dummyNewsData';
+import Link from 'next/link';
 
 export default function Home() {
   return (
@@ -45,21 +48,22 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <h2 className="text-xl font-bold text-text-primary mb-6">최신 뉴스</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card variant="news" className="group">
-              <div className="aspect-video bg-bg-tertiary"></div>
-              <div className="p-4">
-                <h3 className="font-bold text-lg mb-2 text-text-primary group-hover:text-f1-red transition-colors">
-                  레드불, 새로운 에어로 패키지 공개
-                </h3>
-                <p className="text-text-secondary text-sm mb-4">
-                  2024 시즌 첫 업데이트...
-                </p>
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-text-tertiary">2시간 전</span>
-                  <span className="text-sm text-f1-red">자세히 보기 →</span>
-                </div>
-              </div>
-            </Card>
+            {dummyNews.map((news, index) => (
+              <NewsCard 
+                key={news.id} 
+                news={news}
+                priority={index === 0}
+              />
+            ))}
+          </div>
+          <div className="mt-8 text-center">
+            <Link 
+              href="/news" 
+              className="inline-flex items-center text-f1-red hover:text-f1-red-dark transition-colors"
+            >
+              모든 뉴스 보기
+              <span className="ml-2">→</span>
+            </Link>
           </div>
         </div>
       </section>
