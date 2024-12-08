@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
+  :root[data-theme="light"] {
     /* Light Theme Colors */
     --bg-primary: #FFFFFF;
     --bg-secondary: #F5F5F5;
@@ -14,18 +14,11 @@
     --text-tertiary: #666666;
   }
 
-  :root.dark {
+  :root[data-theme="dark"] {
     /* Dark Theme Colors */
     --bg-primary: #121212;
     --bg-secondary: #1F1F1F;
     --bg-tertiary: #2A2A2A;
-    
-    /* Card 배경색을 위한 추가 변수 */
-    --bg-card: #242424;
-
-    /* login 버튼 색상 */
-    --login-button-bg: #404040;
-    --login-button-text: #FFFFFF;
     
     --text-primary: #FFFFFF;
     --text-secondary: #CCCCCC;
@@ -47,29 +40,7 @@
   }
 
   body {
-    @apply bg-bg-primary text-text-primary min-h-screen;
-  }
-
-  /* Dark mode overrides */
-  .dark body {
     @apply bg-bg-primary text-text-primary;
-  }
-
-  .dark .bg-pit-white {
-    @apply bg-bg-primary;
-  }
-
-  .dark .text-racing-black {
-    @apply text-text-primary;
-  }
-
-  .dark .bg-gray-50 {
-    @apply bg-bg-secondary;
-  }
-
-  /* Card 다크모드 오버라이드 */
-  .dark .card {
-    background-color: var(--bg-card);
   }
 }
 
@@ -89,4 +60,4 @@
   .button-secondary {
     @apply bg-bg-tertiary text-text-primary border border-bg-tertiary hover:bg-bg-secondary;
   }
-}
+} 
