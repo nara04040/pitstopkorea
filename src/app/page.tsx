@@ -5,6 +5,8 @@ import { dummyNextRace } from '@/lib/data/dummyRaceData';
 import { NewsCard } from '@/components/news/NewsCard';
 import { dummyNews } from '@/lib/data/dummyNewsData';
 import Link from 'next/link';
+import StandingsSection from '@/components/standings/StandingsSection';
+import { dummyDriverStandings, dummyConstructorStandings } from '@/lib/data/dummyStandingsData';
 
 export default function Home() {
   return (
@@ -71,22 +73,11 @@ export default function Home() {
       {/* 순위표 */}
       <section className="py-8 bg-bg-primary">
         <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold text-text-primary">챔피언십 순위</h2>
-            <div className="flex gap-4">
-              <button className="text-sm font-medium text-f1-red">드라이버</button>
-              <button className="text-sm font-medium text-text-secondary">컨스트럭터</button>
-            </div>
-          </div>
-          <div className="space-y-2">
-            <Card variant="race" className="hover:bg-bg-tertiary">
-              <div className="flex items-center gap-4">
-                <span className="w-8 text-center font-bold">1</span>
-                <span className="font-medium">Max Verstappen</span>
-                <span className="ml-auto font-roboto-mono">51 pts</span>
-              </div>
-            </Card>
-          </div>
+          <h2 className="text-xl font-bold text-text-primary mb-6">챔피언십 순위</h2>
+          <StandingsSection
+            driverStandings={dummyDriverStandings}
+            constructorStandings={dummyConstructorStandings}
+          />
         </div>
       </section>
 
