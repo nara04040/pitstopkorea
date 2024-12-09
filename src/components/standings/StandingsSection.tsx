@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { DriverStanding, ConstructorStanding } from '@/types/standings';
 import { Card } from '@/components/common/Card/Card';
+import Link from 'next/link';
 
 interface StandingsSectionProps {
   driverStandings: DriverStanding[];
@@ -39,50 +40,60 @@ export default function StandingsSection({
       <div className="space-y-2">
         {showConstructors
           ? constructorStandings.map((standing) => (
-              <Card key={standing.position} variant="race" className="hover:bg-bg-tertiary transition-colors">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <span className="font-roboto-mono font-bold text-lg w-8 text-text-primary">
-                      {standing.position}
-                    </span>
-                    <div>
-                      <p className="font-bold text-text-primary">{standing.constructor.name}</p>
+              <Link 
+                key={standing.position} 
+                href={`/race-center/standings/constructors/${standing.constructor.name.toLowerCase().replace(/\s+/g, '-')}`}
+              >
+                <Card variant="race" className="hover:bg-bg-tertiary transition-colors">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <span className="font-roboto-mono font-bold text-lg w-8 text-text-primary">
+                        {standing.position}
+                      </span>
+                      <div>
+                        <p className="font-bold text-text-primary">{standing.constructor.name}</p>
+                        <p className="text-sm text-text-secondary">
+                          {standing.constructor.nationality}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-bold text-text-primary font-roboto-mono">{standing.points} pts</p>
                       <p className="text-sm text-text-secondary">
-                        {standing.constructor.nationality}
+                        {standing.wins} {standing.wins === 1 ? 'win' : 'wins'}
                       </p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="font-bold text-text-primary font-roboto-mono">{standing.points} pts</p>
-                    <p className="text-sm text-text-secondary">
-                      {standing.wins} {standing.wins === 1 ? 'win' : 'wins'}
-                    </p>
-                  </div>
-                </div>
-              </Card>
+                </Card>
+              </Link>
             ))
           : driverStandings.map((standing) => (
-              <Card key={standing.position} variant="race" className="hover:bg-bg-tertiary transition-colors">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <span className="font-roboto-mono font-bold text-lg w-8 text-text-primary">
-                      {standing.position}
-                    </span>
-                    <div>
-                      <p className="font-bold text-text-primary">{standing.driver.name}</p>
+              <Link 
+                key={standing.position} 
+                href={`/race-center/standings/drivers/${standing.driver.name.toLowerCase().replace(/\s+/g, '-')}`}
+              >
+                <Card variant="race" className="hover:bg-bg-tertiary transition-colors">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <span className="font-roboto-mono font-bold text-lg w-8 text-text-primary">
+                        {standing.position}
+                      </span>
+                      <div>
+                        <p className="font-bold text-text-primary">{standing.driver.name}</p>
+                        <p className="text-sm text-text-secondary">
+                          {standing.driver.nationality} | {standing.driver.team}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-bold text-text-primary font-roboto-mono">{standing.points} pts</p>
                       <p className="text-sm text-text-secondary">
-                        {standing.driver.nationality} | {standing.driver.team}
+                        {standing.wins} {standing.wins === 1 ? 'win' : 'wins'}
                       </p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="font-bold text-text-primary font-roboto-mono">{standing.points} pts</p>
-                    <p className="text-sm text-text-secondary">
-                      {standing.wins} {standing.wins === 1 ? 'win' : 'wins'}
-                    </p>
-                  </div>
-                </div>
-              </Card>
+                </Card>
+              </Link>
             ))}
       </div>
     </div>

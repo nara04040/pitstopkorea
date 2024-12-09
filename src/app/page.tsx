@@ -19,7 +19,7 @@ export default function Home() {
               {dummyNextRace.name}
             </h2>
             <Timer targetDate={dummyNextRace.date} targetTime={dummyNextRace.startTime} />
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-text-primary">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-text-primary mt-4">
               <div>
                 <p className="text-md font-bold">날짜</p>
                 <p className="font-medium">{dummyNextRace.date.replace(/-/g, '.')} {dummyNextRace.startTime}</p>
