@@ -12,7 +12,7 @@ export default function LiveRaceInfo({ isRaceActive = false }: LiveRaceInfoProps
         </div>
         
         <div className="space-y-4">
-          <div className="border-b pb-4">
+          <div className="border-b border-gray-600 pb-4">
             <h4 className="text-lg font-semibold">JAPANESE GRAND PRIX</h4>
             <p className="text-gray-800">스즈카 서킷</p>
             <div className="mt-2 flex items-center space-x-4">

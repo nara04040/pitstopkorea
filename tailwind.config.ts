@@ -72,7 +72,42 @@ export default {
           '100%': { opacity: '1' },
         },
       },
+      backgroundImage: {
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+        'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+      },
+      typography: {
+        DEFAULT: {
+          css: {
+            color: 'var(--text-primary)',
+            a: {
+              color: 'var(--f1-red)',
+              '&:hover': {
+                color: '#CC1401',
+              },
+            },
+            strong: {
+              color: 'var(--text-primary)',
+            },
+            h1: {
+              color: 'var(--text-primary)',
+            },
+            h2: {
+              color: 'var(--text-primary)',
+            },
+            h3: {
+              color: 'var(--text-primary)',
+            },
+            h4: {
+              color: 'var(--text-primary)',
+            },
+          },
+        },
+      },
     },
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/line-clamp'),
+    require('@tailwindcss/typography'),
+  ],
 } satisfies Config;

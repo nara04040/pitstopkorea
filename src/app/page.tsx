@@ -2,7 +2,7 @@ import { Card } from '@/components/common/Card/Card';
 import { Timer } from '@/components/common/Timer/Timer';
 import { LiveTiming } from '@/components/race/LiveTiming';
 import { dummyNextRace } from '@/lib/data/dummyRaceData';
-import { NewsCard } from '@/components/news/NewsCard';
+import NewsCard from '@/components/news/NewsCard';
 import { dummyNews } from '@/lib/data/dummyNewsData';
 import Link from 'next/link';
 import StandingsSection from '@/components/standings/StandingsSection';
@@ -50,10 +50,10 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <h2 className="text-xl font-bold text-text-primary mb-6">최신 뉴스</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {dummyNews.map((news, index) => (
+            {dummyNews.map((post, index) => (
               <NewsCard 
-                key={news.id} 
-                news={news}
+                key={post.id} 
+                post={post}
                 priority={index === 0}
               />
             ))}
