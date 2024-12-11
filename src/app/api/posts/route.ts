@@ -58,7 +58,16 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const json = await request.json();
-    const { title, content, category, images, authorId } = json;
+    
+    // 필수 필드 검증
+    if (!json.title || !json.content || !json.category || !json.authorId) {
+      return NextResponse.json(
+        { error: '필수 필드가 누락되었습니다.' },
+        { status: 400 }
+      );
+    }
+
+    const { title, content, category, images = [], authorId } = json;
 
     const post = await prisma.post.create({
       data: {

@@ -14,17 +14,27 @@ export default function WritePage() {
   const router = useRouter();
   const { createPost, isCreating } = usePosts();
 
-  const handleSubmit = async (post: Omit<Post, 'id' | 'createdAt' | 'views' | 'likes' | 'dislikes' | 'comments'>) => {
+  const handleSubmit = async (postData: Omit<Post, 'id' | 'createdAt' | 'views' | 'likes' | 'dislikes' | 'comments' | 'author' | 'authorId'>) => {
     try {
-      await createPost(post, {
-        onSuccess: () => {
-          router.push('/community');
+      // 임시로 작성자 ID 설정 (실제로는 인증된 사용자의 ID를 사용해야 함)
+      const tempAuthorId = 'temp-user-id';
+      
+      await createPost(
+        {
+          ...postData,
+          authorId: tempAuthorId,
+          images: postData.images || [],
         },
-        onError: (error) => {
-          console.error('Failed to create post:', error);
-          alert('게시글 작성에 실패했습니다.');
+        {
+          onSuccess: () => {
+            router.push('/community');
+          },
+          onError: (error: Error) => {
+            console.error('Failed to create post:', error);
+            alert(error.message || '게시글 작성에 실패했습니다.');
+          },
         }
-      });
+      );
     } catch (error) {
       console.error('Failed to submit post:', error);
       alert('게시글 작성에 실패했습니다.');

@@ -15,14 +15,17 @@ interface PostFilters {
 }
 
 // API 함수들
-const fetchPosts = async (filters: PostFilters): Promise<PostsResponse> => {
+const fetchPosts = async (filters: PostFilters = {}): Promise<PostsResponse> => {
   const params = new URLSearchParams();
   if (filters.category) params.append('category', filters.category);
   if (filters.page) params.append('page', filters.page.toString());
   if (filters.limit) params.append('limit', filters.limit.toString());
 
   const response = await fetch(`/api/posts?${params.toString()}`);
-  if (!response.ok) throw new Error('게시글을 불러오는데 실패했습니다.');
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || '게시글을 불러오는데 실패했습니다.');
+  }
   return response.json();
 };
 
@@ -32,39 +35,51 @@ const fetchPost = async (postId: string): Promise<Post> => {
   return response.json();
 };
 
-const createPost = async (post: Omit<Post, 'id' | 'createdAt' | 'views' | 'likes' | 'dislikes' | 'comments'>) => {
+const createPost = async (postData: Omit<Post, 'id' | 'createdAt' | 'views' | 'likes' | 'dislikes' | 'comments' | 'author'>): Promise<Post> => {
   const response = await fetch('/api/posts', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(post),
+    body: JSON.stringify(postData),
   });
-  if (!response.ok) throw new Error('게시글 작성에 실패했습니다.');
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || '게시글 작성에 실패했습니다.');
+  }
+
   return response.json();
 };
 
-const updatePost = async ({ id, ...data }: Partial<Post> & { id: string }) => {
+const updatePost = async ({ id, ...data }: Partial<Post> & { id: string }): Promise<Post> => {
   const response = await fetch(`/api/posts/${id}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
   });
-  if (!response.ok) throw new Error('게시글 수정에 실패했습니다.');
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || '게시글 수정에 실패했습니다.');
+  }
+
   return response.json();
 };
 
-const deletePost = async (id: string) => {
+const deletePost = async (id: string): Promise<void> => {
   const response = await fetch(`/api/posts/${id}`, {
     method: 'DELETE',
   });
-  if (!response.ok) throw new Error('게시글 삭제에 실패했습니다.');
-  return response.json();
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || '게시글 삭제에 실패했습니다.');
+  }
 };
 
 // 커스텀 훅
 export function usePosts(filters: PostFilters = {}) {
   const queryClient = useQueryClient();
 
-  // 게시글 목록 조회
   const {
     data: postsData,
     isLoading,
@@ -74,7 +89,6 @@ export function usePosts(filters: PostFilters = {}) {
     queryFn: () => fetchPosts(filters),
   });
 
-  // 게시글 생성
   const createPostMutation = useMutation({
     mutationFn: createPost,
     onSuccess: () => {
@@ -82,7 +96,6 @@ export function usePosts(filters: PostFilters = {}) {
     },
   });
 
-  // 게시글 수정
   const updatePostMutation = useMutation({
     mutationFn: updatePost,
     onSuccess: () => {
@@ -90,7 +103,6 @@ export function usePosts(filters: PostFilters = {}) {
     },
   });
 
-  // 게시글 삭제
   const deletePostMutation = useMutation({
     mutationFn: deletePost,
     onSuccess: () => {
