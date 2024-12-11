@@ -16,28 +16,41 @@ export default function WritePage() {
 
   const handleSubmit = async (postData: Omit<Post, 'id' | 'createdAt' | 'views' | 'likes' | 'dislikes' | 'comments' | 'author' | 'authorId'>) => {
     try {
-      // 임시로 작성자 ID 설정 (실제로는 인증된 사용자의 ID를 사용해야 함)
-      const tempAuthorId = 'temp-user-id';
+      console.log('Submitting post data:', postData);
       
-      await createPost(
-        {
-          ...postData,
-          authorId: tempAuthorId,
-          images: postData.images || [],
-        },
-        {
-          onSuccess: () => {
-            router.push('/community');
-          },
-          onError: (error: Error) => {
-            console.error('Failed to create post:', error);
-            alert(error.message || '게시글 작성에 실패했습니다.');
-          },
-        }
-      );
+      // 필수 필드 검증
+      if (!postData.title?.trim()) {
+        alert('제목을 입력해주세요.');
+        return;
+      }
+      if (!postData.content?.trim()) {
+        alert('내용을 입력해주세요.');
+        return;
+      }
+      if (!postData.category?.trim()) {
+        alert('카테고리를 선택해주세요.');
+        return;
+      }
+
+      // 임시 사용자 ID 사용 (실제 구현 시에는 인증 시스템으로 대체)
+      const tempUserId = 'clsqw8i890000ml08pxg4lc3h';
+      
+      const postPayload = {
+        title: postData.title.trim(),
+        content: postData.content.trim(),
+        category: postData.category.trim(),
+        authorId: tempUserId,
+        images: postData.images || [],
+      };
+      
+      console.log('Final payload:', postPayload);
+      await createPost(postPayload);
+      
+      // 성공 시 커뮤니티 페이지로 이동
+      router.push('/community');
     } catch (error) {
       console.error('Failed to submit post:', error);
-      alert('게시글 작성에 실패했습니다.');
+      alert(error instanceof Error ? error.message : '게시글 작성에 실패했습니다.');
     }
   };
 

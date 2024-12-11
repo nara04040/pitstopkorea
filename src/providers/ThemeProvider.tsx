@@ -17,7 +17,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    // 테마 변경 시 HTML ��래스 업데이트
+    // 테마 변경 시 HTML 클래스 업데이트
     if (theme === 'dark') {
       document.documentElement.classList.add('dark');
     } else {

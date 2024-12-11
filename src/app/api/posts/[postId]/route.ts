@@ -111,7 +111,7 @@ export async function DELETE(
       where: { id: params.postId },
     });
 
-    return NextResponse.json({ message: '게시���이 삭제되었습니다.' });
+    return NextResponse.json({ message: '게시글이 삭제되었습니다.' });
   } catch (error) {
     console.error('Failed to delete post:', error);
     return NextResponse.json(

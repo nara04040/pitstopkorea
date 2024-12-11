@@ -37,7 +37,12 @@ export default function PostEditor({ onSubmit, isSubmitting = false, initialData
     await onSubmit({
       title,
       content,
-      author: initialData?.author || 'Current User', // TODO: 실제 사용자 정보 연동
+      author: initialData?.author || {
+        id: 'temp-user',
+        name: 'Current User',
+        image: '/images/default-avatar.png'
+      },
+      authorId: 'temp-user',
       images,
       category
     });

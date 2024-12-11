@@ -51,7 +51,7 @@ export const dummyTrack: Track = {
       name: 'First Turn',
       type: 'medium',
       angle: 90,
-      description: '중속 오른쪽 코너, ���월 지점'
+      description: '중속 오른쪽 코너, 추월 지점'
     },
     {
       number: 3,

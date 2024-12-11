@@ -63,7 +63,7 @@ export default function CommunityList({ category }: CommunityListProps) {
                       )}
                     </Link>
                   </div>
-                  <div className="col-span-2 text-center text-text-secondary">{post.author}</div>
+                  <div className="col-span-2 text-center text-text-secondary">{post.author.name}</div>
                   <div className="col-span-2 text-center text-text-secondary">
                     {formatDistanceToNow(post.createdAt, { addSuffix: true, locale: ko })}
                   </div>

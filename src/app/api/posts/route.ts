@@ -57,42 +57,88 @@ export async function GET(request: Request) {
 // 게시글 생성
 export async function POST(request: Request) {
   try {
-    const json = await request.json();
-    
-    // 필수 필드 검증
-    if (!json.title || !json.content || !json.category || !json.authorId) {
+    console.log('Request received:', request);
+    const payload = await request.json();
+    console.log('Received payload:', payload);
+
+    // Validate required fields
+    if (!payload || typeof payload !== 'object') {
+      console.error('Invalid payload:', payload);
       return NextResponse.json(
-        { error: '필수 필드가 누락되었습니다.' },
+        { success: false, error: '잘못된 요청 데이터입니다.' },
         { status: 400 }
       );
     }
 
-    const { title, content, category, images = [], authorId } = json;
+    if (!payload.title || !payload.content || !payload.category || !payload.authorId) {
+      return NextResponse.json(
+        { success: false, error: '필수 필드가 누락되었습니다.' },
+        { status: 400 }
+      );
+    }
 
-    const post = await prisma.post.create({
-      data: {
-        title,
-        content,
-        category,
-        images,
-        authorId,
-      },
-      include: {
-        author: {
-          select: {
-            id: true,
-            name: true,
-            image: true,
+    try {
+      // 개발 환경에서는 임시 사용자 생성 또는 조회
+      let user = await prisma.user.findUnique({
+        where: {
+          id: payload.authorId
+        }
+      });
+
+      // 개발 환경에서 사용자가 없으면 임시 사용자 생성
+      if (!user && process.env.NODE_ENV === 'development') {
+        user = await prisma.user.create({
+          data: {
+            id: payload.authorId,
+            name: '임시 사용자',
+            email: 'temp@example.com',
+          }
+        });
+      }
+
+      if (!user) {
+        return NextResponse.json(
+          { success: false, error: '존재하지 않는 사용자입니다.' },
+          { status: 400 }
+        );
+      }
+
+      const post = await prisma.post.create({
+        data: {
+          title: payload.title,
+          content: payload.content,
+          category: payload.category,
+          images: payload.images || [],
+          authorId: payload.authorId,
+        },
+        include: {
+          author: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
+            },
           },
         },
-      },
-    });
+      });
 
-    return NextResponse.json(post);
+      return NextResponse.json({ success: true, data: post });
+    } catch (prismaError) {
+      console.error('Prisma error:', prismaError);
+      // Prisma 에러의 상세 정보 로깅
+      if (prismaError instanceof Error) {
+        console.error('Error name:', prismaError.name);
+        console.error('Error message:', prismaError.message);
+      }
+      return NextResponse.json(
+        { success: false, error: '데이터베이스 작업 중 오류가 발생했습니다.' },
+        { status: 500 }
+      );
+    }
   } catch (error) {
     console.error('Failed to create post:', error);
     return NextResponse.json(
-      { error: '게시글 작성에 실패했습니다.' },
+      { success: false, error: '게시��� 작성에 실패했습니다.' },
       { status: 500 }
     );
   }
