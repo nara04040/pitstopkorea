@@ -1,19 +1,31 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Post } from '@/types/community';
 import ImageUploader from './ImageUploader';
 
 interface PostEditorProps {
-  onSubmit: (post: Omit<Post, 'id' | 'createdAt' | 'views' | 'likes' | 'comments'>) => Promise<void>;
-  isSubmitting: boolean;
+  onSubmit: (post: Omit<Post, 'id' | 'createdAt' | 'views' | 'likes' | 'dislikes' | 'comments'>) => Promise<void>;
+  isSubmitting?: boolean;
+  initialData?: Omit<Post, 'id' | 'createdAt' | 'views' | 'likes' | 'dislikes' | 'comments'>;
 }
 
-export default function PostEditor({ onSubmit, isSubmitting }: PostEditorProps) {
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
-  const [category, setCategory] = useState('자유게시판');
-  const [images, setImages] = useState<string[]>([]);
+export default function PostEditor({ onSubmit, isSubmitting = false, initialData }: PostEditorProps) {
+  const [title, setTitle] = useState(initialData?.title || '');
+  const [content, setContent] = useState(initialData?.content || '');
+  const [category, setCategory] = useState(initialData?.category || '자유게시판');
+  const [images, setImages] = useState<string[]>(initialData?.images || []);
+
+  useEffect(() => {
+    if (initialData) {
+      setTitle(initialData.title);
+      setContent(initialData.content);
+      setCategory(initialData.category);
+      setImages(initialData.images);
+    }
+
+    console.log(initialData);
+  }, [initialData]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,7 +37,7 @@ export default function PostEditor({ onSubmit, isSubmitting }: PostEditorProps) 
     await onSubmit({
       title,
       content,
-      author: 'Current User', // TODO: 실제 사용자 정보 연동
+      author: initialData?.author || 'Current User', // TODO: 실제 사용자 정보 연동
       images,
       category
     });
@@ -57,7 +69,7 @@ export default function PostEditor({ onSubmit, isSubmitting }: PostEditorProps) 
         />
       </div>
 
-      <ImageUploader onImagesChange={setImages} />
+      <ImageUploader onImagesChange={setImages} initialImages={images} />
 
       <div>
         <textarea
@@ -81,7 +93,7 @@ export default function PostEditor({ onSubmit, isSubmitting }: PostEditorProps) 
           disabled={isSubmitting}
           className="px-6 py-2 bg-f1-red text-white rounded-lg hover:bg-f1-red-dark transition-colors disabled:opacity-50"
         >
-          {isSubmitting ? '저장 중...' : '작성 완료'}
+          {isSubmitting ? '저장 중...' : (initialData ? '수정 완료' : '작성 완료')}
         </button>
       </div>
     </form>

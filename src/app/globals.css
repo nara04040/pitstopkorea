@@ -90,3 +90,27 @@
     @apply bg-bg-tertiary text-text-primary border border-bg-tertiary hover:bg-bg-secondary;
   }
 }
+
+/* 스크롤바 스타일링 */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bg-tertiary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-tertiary);
+}
+
+/* 선택 영역 스타일링 */
+::selection {
+  background: #FF1801;
+  color: white;
+}

@@ -1,14 +1,21 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
 import { ko } from 'date-fns/locale';
-import { Post, CommunityListProps } from '@/types/community';
-import { dummyPosts } from '@/lib/data/dummyCommunityData';
+import { CommunityListProps } from '@/types/community';
+import { usePosts } from '@/hooks/usePosts';
 
 export default function CommunityList({ category }: CommunityListProps) {
-  const [posts] = useState<Post[]>(dummyPosts);
+  const { posts, isLoading, error } = usePosts();
+
+  if (error) {
+    return <div className="text-center py-8">게시글을 불러오는데 실패했습니다.</div>;
+  }
+
+  if (isLoading) {
+    return <div className="text-center py-8">게시글을 불러오는 중...</div>;
+  }
 
   return (
     <div className="space-y-4">
@@ -38,27 +45,33 @@ export default function CommunityList({ category }: CommunityListProps) {
 
           {/* 게시글 목록 */}
           <div className="divide-y divide-bg-tertiary">
-            {posts.map((post) => (
-              <div
-                key={post.id}
-                className="grid grid-cols-12 px-6 py-4 hover:bg-bg-tertiary/50 transition-colors"
-              >
-                <div className="col-span-6">
-                  <Link href={`/community/${post.id}`} className="hover:text-f1-red">
-                    <span className="text-text-primary">{post.title}</span>
-                    {post.comments > 0 && (
-                      <span className="ml-2 text-f1-red">[{post.comments}]</span>
-                    )}
-                  </Link>
-                </div>
-                <div className="col-span-2 text-center text-text-secondary">{post.author}</div>
-                <div className="col-span-2 text-center text-text-secondary">
-                  {formatDistanceToNow(post.createdAt, { addSuffix: true, locale: ko })}
-                </div>
-                <div className="col-span-1 text-center text-text-secondary">{post.views}</div>
-                <div className="col-span-1 text-center text-text-secondary">{post.likes}</div>
+            {!posts || posts.length === 0 ? (
+              <div className="px-6 py-4 text-center text-text-secondary">
+                게시글이 없습니다.
               </div>
-            ))}
+            ) : (
+              posts.map((post) => (
+                <div
+                  key={post.id}
+                  className="grid grid-cols-12 px-6 py-4 hover:bg-bg-tertiary/50 transition-colors"
+                >
+                  <div className="col-span-6">
+                    <Link href={`/community/${post.id}`} className="hover:text-f1-red">
+                      <span className="text-text-primary">{post.title}</span>
+                      {post.comments > 0 && (
+                        <span className="ml-2 text-f1-red">[{post.comments}]</span>
+                      )}
+                    </Link>
+                  </div>
+                  <div className="col-span-2 text-center text-text-secondary">{post.author}</div>
+                  <div className="col-span-2 text-center text-text-secondary">
+                    {formatDistanceToNow(post.createdAt, { addSuffix: true, locale: ko })}
+                  </div>
+                  <div className="col-span-1 text-center text-text-secondary">{post.views}</div>
+                  <div className="col-span-1 text-center text-text-secondary">{post.likes}</div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>

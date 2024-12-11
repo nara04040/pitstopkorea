@@ -1,32 +1,31 @@
 "use client";
 
-import { useRouter, useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Post, Comment } from '@/types/community';
-import { dummyPosts } from '@/lib/data/dummyCommunityData';
-import { dummyComments } from '@/lib/data/dummyCommentData';
+import { useRouter } from 'next/navigation';
+import { Post } from '@/types/community';
+import { getPost, deletePost } from '@/lib/services/postService';
 import { ThumbsUp, ThumbsDown } from 'lucide-react';
 
-export default function PostDetailPage() {
+export default function PostDetailPage({ params }: { params: { postId: string } }) {
   const router = useRouter();
-  const { postId } = useParams();
   const [post, setPost] = useState<Post | null>(null);
-  const [comments, setComments] = useState<Comment[]>([]);
   const [isLiked, setIsLiked] = useState(false);
   const [isDisliked, setIsDisliked] = useState(false);
-
-  const currentIndex = dummyPosts.findIndex((p) => p.id === postId);
-  const nextPost = dummyPosts[currentIndex + 1];
-  const prevPost = dummyPosts[currentIndex - 1];
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
-    if (postId) {
-      const foundPost = dummyPosts.find((p) => p.id === postId);
-      setPost(foundPost || null);
-      const relatedComments = dummyComments.filter((c) => c.postId === postId);
-      setComments(relatedComments);
-    }
-  }, [postId]);
+    const fetchPost = async () => {
+      try {
+        const fetchedPost = await getPost(params.postId);
+        setPost(fetchedPost);
+      } catch (error) {
+        console.error('Failed to fetch post:', error);
+        alert('게시글을 불러오는데 실패했습니다.');
+        router.push('/community');
+      }
+    };
+    fetchPost();
+  }, [params.postId, router]);
 
   const handleLike = () => {
     if (!post) return;
@@ -62,28 +61,92 @@ export default function PostDetailPage() {
     }
   };
 
-  if (!post) return <p>Loading...</p>;
+  const handleEdit = () => {
+    router.push(`/community/edit/${params.postId}`);
+  };
+
+  const handleDelete = async () => {
+    if (!confirm('정말 이 게시글을 삭제하시겠습니까?')) return;
+
+    try {
+      setIsDeleting(true);
+      await deletePost(params.postId);
+      router.push('/community');
+      router.refresh();
+    } catch (error) {
+      console.error('Failed to delete post:', error);
+      alert('게시글 삭제에 실패했습니다.');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  if (!post) {
+    return <div className="min-h-screen pt-20 px-4 md:px-10">로딩중...</div>;
+  }
 
   return (
     <main className="min-h-screen pt-20 px-4 md:px-10">
       <div className="max-w-screen-lg mx-auto">
-        <h1 className="text-3xl font-bold text-text-primary mb-4">{post.title}</h1>
-        <p className="text-text-secondary mb-2">By {post.author} | {post.createdAt.toLocaleDateString()}</p>
-        <div className="flex items-center gap-4 mb-4">
-          <div className="flex items-center gap-2">
-            <button 
+        <div className="bg-bg-secondary rounded-lg p-6 mb-6">
+          <div className="flex justify-between items-center mb-4">
+            <h1 className="text-2xl font-bold text-text-primary">{post.title}</h1>
+            <div className="flex gap-2">
+              <button
+                onClick={handleEdit}
+                className="px-4 py-2 bg-bg-tertiary text-text-primary rounded hover:bg-opacity-80"
+              >
+                수정
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={isDeleting}
+                className="px-4 py-2 bg-f1-red text-white rounded hover:bg-opacity-80 disabled:opacity-50"
+              >
+                {isDeleting ? '삭제중...' : '삭제'}
+              </button>
+            </div>
+          </div>
+          
+          <div className="flex items-center text-text-secondary mb-4">
+            <span>{post.author}</span>
+            <span className="mx-2">•</span>
+            <span>{post.createdAt.toLocaleDateString()}</span>
+            <span className="mx-2">•</span>
+            <span>{post.category}</span>
+          </div>
+
+          {post.images.length > 0 && (
+            <div className="mb-6">
+              {post.images.map((image, index) => (
+                <img
+                  key={index}
+                  src={image}
+                  alt={`게시글 이미지 ${index + 1}`}
+                  className="max-w-full rounded-lg mb-4"
+                />
+              ))}
+            </div>
+          )}
+
+          <div className="text-text-primary whitespace-pre-wrap mb-8">
+            {post.content}
+          </div>
+
+          <div className="flex items-center gap-4">
+            <button
               onClick={handleLike}
-              className={`flex items-center gap-1 px-3 py-2 rounded ${
-                isLiked ? 'bg-f1-red text-white' : 'bg-gray-500 hover:bg-gray-200'
+              className={`flex items-center gap-2 px-4 py-2 rounded ${
+                isLiked ? 'bg-f1-red text-white' : 'bg-bg-tertiary text-text-primary'
               }`}
             >
               <ThumbsUp size={18} />
               <span>{post.likes}</span>
             </button>
-            <button 
+            <button
               onClick={handleDislike}
-              className={`flex items-center gap-1 px-3 py-2 rounded ${
-                isDisliked ? 'bg-gray-800 text-white' : 'bg-gray-500 hover:bg-gray-200'
+              className={`flex items-center gap-2 px-4 py-2 rounded ${
+                isDisliked ? 'bg-f1-red text-white' : 'bg-bg-tertiary text-text-primary'
               }`}
             >
               <ThumbsDown size={18} />
@@ -92,30 +155,8 @@ export default function PostDetailPage() {
           </div>
           <p className="text-text-secondary">Views: {post.views}</p>
         </div>
-        <div className="mb-8">
-          <p>{post.content}</p>
-        </div>
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-text-primary mb-4">Comments</h2>
-          {comments.map((comment) => (
-            <div key={comment.id} className="mb-4">
-              <p className="text-text-primary">{comment.content}</p>
-              <p className="text-text-secondary text-sm">By {comment.author} | {comment.createdAt.toLocaleDateString()}</p>
-            </div>
-          ))}
-          <form className="mt-4">
-            <textarea className="w-full p-2 border rounded mb-2" placeholder="Write a comment..."></textarea>
-            <button type="submit" className="bg-f1-red text-white px-4 py-2 rounded">Submit</button>
-          </form>
-        </div>
-        <div className="flex justify-between">
-          {prevPost && (
-            <button onClick={() => router.push(`/community/${prevPost.id}`)} className="text-f1-red">Previous Post</button>
-          )}
-          {nextPost && (
-            <button onClick={() => router.push(`/community/${nextPost.id}`)} className="text-f1-red">Next Post</button>
-          )}
-        </div>
+
+        {/* 댓글 섹션은 별도 컴포넌트로 분리 예정 */}
       </div>
     </main>
   );

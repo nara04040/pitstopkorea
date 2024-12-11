@@ -1,14 +1,21 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 
 interface ImageUploaderProps {
   onImagesChange: (images: string[]) => void;
+  initialImages?: string[];
 }
 
-export default function ImageUploader({ onImagesChange }: ImageUploaderProps) {
-  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+export default function ImageUploader({ onImagesChange, initialImages = [] }: ImageUploaderProps) {
+  const [previewUrls, setPreviewUrls] = useState<string[]>(initialImages);
+
+  useEffect(() => {
+    if (initialImages.length > 0) {
+      setPreviewUrls(initialImages);
+    }
+  }, [initialImages]);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
