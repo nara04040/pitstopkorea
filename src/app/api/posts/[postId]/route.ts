@@ -51,7 +51,7 @@ export async function GET(
 
     if (!post) {
       return NextResponse.json(
-        { error: '게시글을 찾을 수 없습니다.' },
+        { error: '게시글을 ��을 수 없습니다.' },
         { status: 404 }
       );
     }
@@ -123,13 +123,40 @@ export async function DELETE(
   try {
     const { postId } = params;
     
+    // 게시글 존재 여부 확인
+    const post = await prisma.post.findUnique({
+      where: { id: postId },
+    });
+
+    if (!post) {
+      return NextResponse.json(
+        { error: '게시글을 찾을 수 없습니다.' },
+        { status: 404 }
+      );
+    }
+
+    // 게시글 삭제
     await prisma.post.delete({
       where: { id: postId },
     });
 
-    return NextResponse.json({ message: '게시글이 삭제되었습니다.' });
+    return NextResponse.json({ 
+      success: true,
+      message: '게시글이 삭제되었습니다.' 
+    });
   } catch (error) {
     console.error('Failed to delete post:', error);
+    
+    // Prisma 에러 처리
+    if (error instanceof Error) {
+      if (error.message.includes('Record to delete does not exist')) {
+        return NextResponse.json(
+          { error: '게시글을 찾을 수 없습니다.' },
+          { status: 404 }
+        );
+      }
+    }
+    
     return NextResponse.json(
       { error: '게시글 삭제에 실패했습니다.' },
       { status: 500 }

@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { Post } from '@/types/community';
-import { getPost, deletePost } from '@/lib/services/postService';
 import { ThumbsUp, ThumbsDown } from 'lucide-react';
 
 export default function PostDetailPage() {
@@ -77,16 +76,32 @@ export default function PostDetailPage() {
   };
 
   const handleDelete = async () => {
-    if (!confirm('정말 이 게시글을 삭제하시��습니까?')) return;
+    if (!post) {
+      alert('게시글을 찾을 수 없습니다.');
+      return;
+    }
+
+    if (!confirm('정말 이 게시글을 삭제하시겠습니까?')) return;
 
     try {
       setIsDeleting(true);
-      await deletePost(postId);
+      const response = await fetch(`/api/posts/${postId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || '게시글 삭제에 실패했습니다.');
+      }
+
       router.push('/community');
       router.refresh();
     } catch (error) {
       console.error('Failed to delete post:', error);
-      alert('게시글 삭제에 실패했습니다.');
+      alert(error instanceof Error ? error.message : '게시글 삭제에 실패했습니다.');
     } finally {
       setIsDeleting(false);
     }
