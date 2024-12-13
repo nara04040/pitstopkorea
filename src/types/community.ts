@@ -8,15 +8,14 @@ export interface Post {
   id: string;
   title: string;
   content: string;
-  author: Author;
-  authorId: string;
-  images: string[];
-  createdAt: Date;
-  views: number;
+  author: string | { name: string };
+  createdAt: string;
+  updatedAt?: string;
+  category: string;
   likes: number;
   dislikes: number;
-  comments: number;
-  category: string;
+  views: number;
+  images: string[];
 }
 
 export interface CommunityListProps {

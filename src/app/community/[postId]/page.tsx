@@ -40,15 +40,28 @@ export default function PostDetailPage() {
   const handleLike = () => {
     if (!post) return;
     
+    const currentLikes = Number(post.likes) || 0;
+    const currentDislikes = Number(post.dislikes) || 0;
+    
     if (isLiked) {
-      setPost({ ...post, likes: post.likes - 1 });
+      setPost({ 
+        ...post, 
+        likes: currentLikes - 1 
+      });
       setIsLiked(false);
     } else {
       if (isDisliked) {
-        setPost({ ...post, likes: post.likes + 1, dislikes: post.dislikes - 1 });
+        setPost({ 
+          ...post, 
+          likes: currentLikes + 1, 
+          dislikes: currentDislikes - 1 
+        });
         setIsDisliked(false);
       } else {
-        setPost({ ...post, likes: post.likes + 1 });
+        setPost({ 
+          ...post, 
+          likes: currentLikes + 1 
+        });
       }
       setIsLiked(true);
     }
@@ -57,15 +70,28 @@ export default function PostDetailPage() {
   const handleDislike = () => {
     if (!post) return;
     
+    const currentLikes = Number(post.likes) || 0;
+    const currentDislikes = Number(post.dislikes) || 0;
+    
     if (isDisliked) {
-      setPost({ ...post, dislikes: post.dislikes - 1 });
+      setPost({ 
+        ...post, 
+        dislikes: currentDislikes - 1 
+      });
       setIsDisliked(false);
     } else {
       if (isLiked) {
-        setPost({ ...post, dislikes: post.dislikes + 1, likes: post.likes - 1 });
+        setPost({ 
+          ...post, 
+          dislikes: currentDislikes + 1, 
+          likes: currentLikes - 1 
+        });
         setIsLiked(false);
       } else {
-        setPost({ ...post, dislikes: post.dislikes + 1 });
+        setPost({ 
+          ...post, 
+          dislikes: currentDislikes + 1 
+        });
       }
       setIsDisliked(true);
     }
@@ -81,7 +107,7 @@ export default function PostDetailPage() {
       return;
     }
 
-    if (!confirm('정말 이 게시글을 삭제하시겠습니까?')) return;
+    if (!confirm('정말 해당 게시글을 삭제하시겠습니까?')) return;
 
     try {
       setIsDeleting(true);
@@ -175,7 +201,7 @@ export default function PostDetailPage() {
               }`}
             >
               <ThumbsUp size={18} />
-              <span>{post.likes}</span>
+              <span>{Number(post.likes) || 0}</span>
             </button>
             <button
               onClick={handleDislike}
@@ -184,7 +210,7 @@ export default function PostDetailPage() {
               }`}
             >
               <ThumbsDown size={18} />
-              <span>{post.dislikes}</span>
+              <span>{Number(post.dislikes) || 0}</span>
             </button>
           </div>
           <p className="text-text-secondary">Views: {post.views}</p>
