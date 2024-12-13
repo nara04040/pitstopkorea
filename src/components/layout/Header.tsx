@@ -24,7 +24,7 @@ export default function Header() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-bg-primary border-b border-bg-secondary">
       <div className="max-w-screen-2xl mx-auto px-4 h-16 flex items-center justify-between">
-        <Link href="/" className="text-f1-red text-2xl font-bold text-text-primary">
+        <Link href="/" className="text-2xl font-bold text-f1-red">
           PitStopKorea
         </Link>
         
@@ -84,6 +84,12 @@ export default function Header() {
             className="px-4 py-2 rounded-lg bg-f1-red text-white hover:bg-f1-red-dark transition-colors"
           >
             로그인
+          </Link>
+          <Link
+            href="/signup"
+            className="px-4 py-2 rounded-lg bg-bg-tertiary text-text-primary hover:bg-bg-secondary transition-colors"
+          >
+            회원가입
           </Link>
         </div>
       </div>

@@ -100,8 +100,7 @@ export default function EditPage() {
             content: post.content,
             category: post.category,
             images: post.images,
-            author: post.author,
-            authorId: post.authorId
+            author: post.author
           }}
         />
       </div>

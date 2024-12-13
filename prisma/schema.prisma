@@ -11,15 +11,18 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(cuid())
-  email     String    @unique
-  name      String
-  image     String?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  nickname  String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // 관계 필드 추가
   posts     Post[]
   comments  Comment[]
   likes     Like[]
+  verificationTokens VerificationToken[]
 }
 
 model Post {
@@ -57,4 +60,13 @@ model Like {
   createdAt DateTime @default(now())
 
   @@unique([userId, postId])
+}
+
+model VerificationToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  expiresAt DateTime
 }
