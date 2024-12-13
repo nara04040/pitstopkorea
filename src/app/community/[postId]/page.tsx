@@ -1,31 +1,42 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { Post } from '@/types/community';
 import { getPost, deletePost } from '@/lib/services/postService';
 import { ThumbsUp, ThumbsDown } from 'lucide-react';
 
-export default function PostDetailPage({ params }: { params: { postId: string } }) {
+export default function PostDetailPage() {
+  const params = useParams();
+  const postId = params.postId as string;
   const router = useRouter();
   const [post, setPost] = useState<Post | null>(null);
   const [isLiked, setIsLiked] = useState(false);
   const [isDisliked, setIsDisliked] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const fetchedPost = await getPost(params.postId);
+        const response = await fetch(`/api/posts/${postId}`);
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || '게시글을 불러오는데 실패했습니다.');
+        }
+        const fetchedPost = await response.json();
         setPost(fetchedPost);
+        setError(null);
       } catch (error) {
         console.error('Failed to fetch post:', error);
-        alert('게시글을 불러오는데 실패했습니다.');
-        router.push('/community');
+        setError(error instanceof Error ? error.message : '게시글을 불러오는데 실패했습니다.');
+        setTimeout(() => {
+          router.push('/community');
+        }, 2000);
       }
     };
     fetchPost();
-  }, [params.postId, router]);
+  }, [postId, router]);
 
   const handleLike = () => {
     if (!post) return;
@@ -66,11 +77,11 @@ export default function PostDetailPage({ params }: { params: { postId: string } 
   };
 
   const handleDelete = async () => {
-    if (!confirm('정말 이 게시글을 삭제하시겠습니까?')) return;
+    if (!confirm('정말 이 게시글을 삭제하시��습니까?')) return;
 
     try {
       setIsDeleting(true);
-      await deletePost(params.postId);
+      await deletePost(postId);
       router.push('/community');
       router.refresh();
     } catch (error) {
@@ -80,6 +91,14 @@ export default function PostDetailPage({ params }: { params: { postId: string } 
       setIsDeleting(false);
     }
   };
+
+  if (error) {
+    return (
+      <div className="min-h-screen pt-20 px-4 md:px-10">
+        <div className="text-center text-red-500">{error}</div>
+      </div>
+    );
+  }
 
   if (!post) {
     return <div className="min-h-screen pt-20 px-4 md:px-10">로딩중...</div>;
@@ -109,9 +128,9 @@ export default function PostDetailPage({ params }: { params: { postId: string } 
           </div>
           
           <div className="flex items-center text-text-secondary mb-4">
-            <span>{post.author}</span>
+            <span>{typeof post.author === 'string' ? post.author : post.author?.name || '익명'}</span>
             <span className="mx-2">•</span>
-            <span>{post.createdAt.toLocaleDateString()}</span>
+            <span>{new Date(post.createdAt).toLocaleDateString()}</span>
             <span className="mx-2">•</span>
             <span>{post.category}</span>
           </div>

@@ -138,7 +138,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('Failed to create post:', error);
     return NextResponse.json(
-      { success: false, error: '게시��� 작성에 실패했습니다.' },
+      { success: false, error: '게시글 작성에 실패했습니다.' },
       { status: 500 }
     );
   }

@@ -7,8 +7,17 @@ export async function GET(
   { params }: { params: { postId: string } }
 ) {
   try {
+    const { postId } = params;
+    
+    if (!postId) {
+      return NextResponse.json(
+        { error: '게시글 ID가 필요합니다.' },
+        { status: 400 }
+      );
+    }
+
     const post = await prisma.post.findUnique({
-      where: { id: params.postId },
+      where: { id: postId },
       include: {
         author: {
           select: {
@@ -47,11 +56,15 @@ export async function GET(
       );
     }
 
-    // 조회수 증가
-    await prisma.post.update({
-      where: { id: params.postId },
-      data: { views: { increment: 1 } },
-    });
+    // 조회수 증가 (에러가 발생해도 게시글 조회는 성공으로 처리)
+    try {
+      await prisma.post.update({
+        where: { id: postId },
+        data: { views: { increment: 1 } },
+      });
+    } catch (error) {
+      console.error('Failed to increment view count:', error);
+    }
 
     return NextResponse.json(post);
   } catch (error) {
@@ -69,11 +82,12 @@ export async function PATCH(
   { params }: { params: { postId: string } }
 ) {
   try {
+    const { postId } = params;
     const json = await request.json();
     const { title, content, category, images } = json;
 
     const post = await prisma.post.update({
-      where: { id: params.postId },
+      where: { id: postId },
       data: {
         title,
         content,
@@ -107,8 +121,10 @@ export async function DELETE(
   { params }: { params: { postId: string } }
 ) {
   try {
+    const { postId } = params;
+    
     await prisma.post.delete({
-      where: { id: params.postId },
+      where: { id: postId },
     });
 
     return NextResponse.json({ message: '게시글이 삭제되었습니다.' });
