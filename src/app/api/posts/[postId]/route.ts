@@ -51,7 +51,7 @@ export async function GET(
 
     if (!post) {
       return NextResponse.json(
-        { error: '게시글을 ��을 수 없습니다.' },
+        { error: '게시글을 찾을 수 없습니다.' },
         { status: 404 }
       );
     }
