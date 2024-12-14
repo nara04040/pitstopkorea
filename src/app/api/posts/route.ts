@@ -10,6 +10,8 @@ export async function GET(request: Request) {
     const limit = parseInt(searchParams.get('limit') || '10');
     const skip = (page - 1) * limit;
 
+    console.log('Fetching posts with params:', { category, page, limit, skip });
+
     const where = category ? { category } : {};
 
     const [posts, total] = await Promise.all([
@@ -19,8 +21,7 @@ export async function GET(request: Request) {
           author: {
             select: {
               id: true,
-              name: true,
-              image: true,
+              nickname: true,
             },
           },
           _count: {
@@ -39,6 +40,8 @@ export async function GET(request: Request) {
       prisma.post.count({ where }),
     ]);
 
+    console.log('Successfully fetched posts:', { total, currentPage: page });
+
     return NextResponse.json({
       posts,
       total,
@@ -47,8 +50,16 @@ export async function GET(request: Request) {
     });
   } catch (error) {
     console.error('Failed to fetch posts:', error);
+    
+    // 구체적인 에러 메시지 포함
+    const errorMessage = error instanceof Error ? error.message : '게시글을 불러오는데 실패했습니다.';
+    
     return NextResponse.json(
-      { error: '게시글을 불러오는데 실패했습니다.' },
+      { 
+        success: false,
+        error: errorMessage,
+        details: process.env.NODE_ENV === 'development' ? error : undefined
+      },
       { status: 500 }
     );
   }
@@ -90,8 +101,9 @@ export async function POST(request: Request) {
         user = await prisma.user.create({
           data: {
             id: payload.authorId,
-            name: '임시 사용자',
+            nickname: '임시 사용자',
             email: 'temp@example.com',
+            password: 'temppassword',
           }
         });
       }
@@ -115,8 +127,7 @@ export async function POST(request: Request) {
           author: {
             select: {
               id: true,
-              name: true,
-              image: true,
+              nickname: true,
             },
           },
         },

@@ -1,6 +1,6 @@
 export interface Author {
   id: string;
-  name: string;
+  nickname: string;
   image?: string;
 }
 
@@ -8,7 +8,7 @@ export interface Post {
   id: string;
   title: string;
   content: string;
-  author: string | { name: string };
+  author: string | Author;
   createdAt: string;
   updatedAt?: string;
   category: string;
@@ -16,6 +16,7 @@ export interface Post {
   dislikes: number;
   views: number;
   images: string[];
+  comments: number;
 }
 
 export interface CommunityListProps {

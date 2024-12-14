@@ -19,12 +19,17 @@ export default function PostDetailPage() {
     const fetchPost = async () => {
       try {
         const response = await fetch(`/api/posts/${postId}`);
+        const result = await response.json();
+        
         if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || '게시글을 불러오는데 실패했습니다.');
+          throw new Error(result.error || '게시글을 불러오는데 실패했습니다.');
         }
-        const fetchedPost = await response.json();
-        setPost(fetchedPost);
+        
+        if (!result.success) {
+          throw new Error(result.error || '게시글을 불러오는데 실패했습니다.');
+        }
+
+        setPost(result.data);
         setError(null);
       } catch (error) {
         console.error('Failed to fetch post:', error);
@@ -118,9 +123,10 @@ export default function PostDetailPage() {
         },
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || '게시글 삭제에 실패했습니다.');
+      const result = await response.json();
+      
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || '게시글 삭제에 실패했습니다.');
       }
 
       router.push('/community');
@@ -169,14 +175,14 @@ export default function PostDetailPage() {
           </div>
           
           <div className="flex items-center text-text-secondary mb-4">
-            <span>{typeof post.author === 'string' ? post.author : post.author?.name || '익명'}</span>
+            <span>{typeof post.author === 'string' ? post.author : post.author.nickname}</span>
             <span className="mx-2">•</span>
             <span>{new Date(post.createdAt).toLocaleDateString()}</span>
             <span className="mx-2">•</span>
             <span>{post.category}</span>
           </div>
 
-          {post.images.length > 0 && (
+          {post.images && post.images.length > 0 && (
             <div className="mb-6">
               {post.images.map((image, index) => (
                 <img

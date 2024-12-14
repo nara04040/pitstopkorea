@@ -3,11 +3,13 @@
 import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const signupSuccess = searchParams.get('signup') === 'success';
+  const { login } = useAuth();
   
   const [formData, setFormData] = useState({
     email: '',
@@ -31,12 +33,16 @@ export default function LoginPage() {
         body: JSON.stringify(formData),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.message || '로그인에 실패했습니다.');
+        throw new Error(data.error || '로그인에 실패했습니다.');
       }
 
-      // 로그인 성공 시 메인 페이지로 이동
+      // 로그인 성공 시 사용자 정보 저장
+      login(data.user);
+      
+      // 메인 페이지로 이동
       router.push('/');
       router.refresh();
     } catch (error) {

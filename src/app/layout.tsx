@@ -1,7 +1,7 @@
-import { Inter } from 'next/font/google';
-import './globals.css';
-import Providers from '@/components/Providers';
 import { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import Providers from '@/components/Providers';
+import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -52,9 +52,7 @@ export default function RootLayout({
         <meta property="og:image" content={ogImage} />
       </head>
       <body className={`${inter.className} bg-bg-primary text-text-primary min-h-screen`}>
-        <Providers>
-          {children}
-        </Providers>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

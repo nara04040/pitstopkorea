@@ -22,8 +22,7 @@ export async function GET(
         author: {
           select: {
             id: true,
-            name: true,
-            image: true,
+            nickname: true,
           },
         },
         comments: {
@@ -31,8 +30,7 @@ export async function GET(
             author: {
               select: {
                 id: true,
-                name: true,
-                image: true,
+                nickname: true,
               },
             },
           },
@@ -66,11 +64,11 @@ export async function GET(
       console.error('Failed to increment view count:', error);
     }
 
-    return NextResponse.json(post);
+    return NextResponse.json({ success: true, data: post });
   } catch (error) {
     console.error('Failed to fetch post:', error);
     return NextResponse.json(
-      { error: '게시글을 불러오는데 실패했습니다.' },
+      { success: false, error: '게시글을 불러오는데 실패했습니다.' },
       { status: 500 }
     );
   }
@@ -98,18 +96,17 @@ export async function PATCH(
         author: {
           select: {
             id: true,
-            name: true,
-            image: true,
+            nickname: true,
           },
         },
       },
     });
 
-    return NextResponse.json(post);
+    return NextResponse.json({ success: true, data: post });
   } catch (error) {
     console.error('Failed to update post:', error);
     return NextResponse.json(
-      { error: '게시글 수정에 실패했습니다.' },
+      { success: false, error: '게시글 수정에 실패했습니다.' },
       { status: 500 }
     );
   }
@@ -130,7 +127,7 @@ export async function DELETE(
 
     if (!post) {
       return NextResponse.json(
-        { error: '게시글을 찾을 수 없습니다.' },
+        { success: false, error: '게시글을 찾을 수 없습니다.' },
         { status: 404 }
       );
     }
@@ -151,14 +148,14 @@ export async function DELETE(
     if (error instanceof Error) {
       if (error.message.includes('Record to delete does not exist')) {
         return NextResponse.json(
-          { error: '게시글을 찾을 수 없습니다.' },
+          { success: false, error: '게시글을 찾을 수 없습니다.' },
           { status: 404 }
         );
       }
     }
     
     return NextResponse.json(
-      { error: '게시글 삭제에 실패했습니다.' },
+      { success: false, error: '게시글 삭제에 실패했습니다.' },
       { status: 500 }
     );
   }
